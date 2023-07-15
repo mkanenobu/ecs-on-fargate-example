@@ -2,15 +2,15 @@
   "name": "app",
   "private": true,
   "scripts": {
-    "build:code": "tsx scripts/build.ts",
-    "build:image": "docker build .",
-    "build": "pnpm run build:code && pnpm run build:image"
+    "build-code": "tsx scripts/build.ts",
+    "build-and-push-image": "dotenv bash scripts/build-and-push-image.bash",
+    "publish": "pnpm run build-code && pnpm run build-and-push-image"
   },
   "dependencies": {
     "esbuild": "0.18.13"
   },
   "devDependencies": {
-    "dotenv": "16.3.1",
+    "dotenv-cli": "7.2.1",
     "tsx": "3.12.7"
   }
 }
