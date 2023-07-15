@@ -1,0 +1,16 @@
+{
+  "name": "app",
+  "private": true,
+  "scripts": {
+    "build:code": "tsx scripts/build.ts",
+    "build:image": "docker build .",
+    "build": "pnpm run build:code && pnpm run build:image"
+  },
+  "dependencies": {
+    "esbuild": "0.18.13"
+  },
+  "devDependencies": {
+    "dotenv": "16.3.1",
+    "tsx": "3.12.7"
+  }
+}
