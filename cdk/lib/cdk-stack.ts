@@ -19,7 +19,7 @@ export class CdkStack extends cdk.Stack {
     const repository = this.ecrRepository();
 
     // ECS
-    // this.ecs({ vpc, repository });
+    this.ecs({ vpc, repository });
   }
 
   private ecrRepository() {
