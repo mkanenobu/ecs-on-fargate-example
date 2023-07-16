@@ -50,6 +50,8 @@ export class CdkStack extends cdk.Stack {
   private ecs(props: { vpc: ec2.Vpc; repository: ecr.Repository }) {
     const logGroup = new logs.LogGroup(this, "LogGroup", {
       logGroupName: "ecs-on-fargate-example",
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+      retention: logs.RetentionDays.ONE_DAY,
     });
 
     // ECS クラスター
