@@ -40,12 +40,14 @@ export class CdkStack extends cdk.Stack {
     const fargateTaskDefinition = new ecs.FargateTaskDefinition(
       this,
       "TaskDef",
+      { cpu: 256, memoryLimitMiB: 512 },
     );
 
     // コンテナ
     const container = fargateTaskDefinition.addContainer("Container", {
       image: ecs.ContainerImage.fromEcrRepository(props.repository, "latest"),
-      memoryLimitMiB: 256,
+      cpu: 256,
+      memoryLimitMiB: 512,
     });
 
     container.addPortMappings({
@@ -57,7 +59,9 @@ export class CdkStack extends cdk.Stack {
       cluster: ecsCluster,
       taskDefinition: fargateTaskDefinition,
       assignPublicIp: true,
-      desiredCount: 1,
+      desiredCount: 0,
+      maxHealthyPercent: 200,
+      minHealthyPercent: 50,
     });
 
     service.connections.allowFromAnyIpv4(ec2.Port.tcp(80));

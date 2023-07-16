@@ -2,6 +2,7 @@
   "name": "app",
   "private": true,
   "scripts": {
+    "dev": "tsx --watch src/main.ts",
     "build-code": "tsx scripts/build.ts",
     "build-and-push-image": "dotenv bash scripts/build-and-push-image.bash",
     "publish": "pnpm run build-code && pnpm run build-and-push-image"
