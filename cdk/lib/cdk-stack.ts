@@ -3,6 +3,8 @@ import { Construct } from "constructs";
 import * as ecs from "aws-cdk-lib/aws-ecs";
 import * as ec2 from "aws-cdk-lib/aws-ec2";
 import * as ecr from "aws-cdk-lib/aws-ecr";
+import * as elb from "aws-cdk-lib/aws-elasticloadbalancingv2";
+import * as logs from "aws-cdk-lib/aws-logs";
 
 export class CdkStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
@@ -15,11 +17,26 @@ export class CdkStack extends cdk.Stack {
       natGateways: 1,
     });
 
+    // Load Balancer
+    const lb = new elb.ApplicationLoadBalancer(this, "LB", {
+      vpc,
+      internetFacing: true,
+      http2Enabled: true,
+    });
+
     // ECR リポジトリ
     const repository = this.ecrRepository();
 
     // ECS
-    this.ecs({ vpc, repository });
+    const ecsResources = this.ecs({ vpc, repository });
+
+    const listener = lb.addListener("Listener", { port: 80 });
+    listener.addTargets("Target", {
+      port: 80,
+      targets: [ecsResources.service],
+      protocol: elb.ApplicationProtocol.HTTP,
+    });
+    listener.connections.allowDefaultPortFromAnyIpv4();
   }
 
   private ecrRepository() {
@@ -31,6 +48,10 @@ export class CdkStack extends cdk.Stack {
   }
 
   private ecs(props: { vpc: ec2.Vpc; repository: ecr.Repository }) {
+    const logGroup = new logs.LogGroup(this, "LogGroup", {
+      logGroupName: "ecs-on-fargate-example",
+    });
+
     // ECS クラスター
     const ecsCluster = new ecs.Cluster(this, "Cluster", {
       vpc: props.vpc,
@@ -48,6 +69,10 @@ export class CdkStack extends cdk.Stack {
       image: ecs.ContainerImage.fromEcrRepository(props.repository, "latest"),
       cpu: 256,
       memoryLimitMiB: 512,
+      logging: ecs.LogDriver.awsLogs({
+        streamPrefix: "ecs-on-fargate-example",
+        logGroup,
+      }),
     });
 
     container.addPortMappings({
@@ -83,5 +108,12 @@ export class CdkStack extends cdk.Stack {
       scaleInCooldown: cdk.Duration.seconds(60),
       scaleOutCooldown: cdk.Duration.seconds(60),
     });
+
+    return {
+      tasksDefinition: fargateTaskDefinition,
+      container,
+      service,
+      cluster: ecsCluster,
+    };
   }
 }
