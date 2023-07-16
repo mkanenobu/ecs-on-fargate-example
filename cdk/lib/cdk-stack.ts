@@ -63,7 +63,14 @@ export class CdkStack extends cdk.Stack {
     const fargateTaskDefinition = new ecs.FargateTaskDefinition(
       this,
       "TaskDef",
-      { cpu: 256, memoryLimitMiB: 512 },
+      {
+        cpu: 256,
+        memoryLimitMiB: 512,
+        runtimePlatform: {
+          cpuArchitecture: ecs.CpuArchitecture.ARM64,
+          operatingSystemFamily: ecs.OperatingSystemFamily.LINUX,
+        },
+      },
     );
 
     // コンテナ
