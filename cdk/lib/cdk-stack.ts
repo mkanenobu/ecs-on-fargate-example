@@ -60,6 +60,8 @@ export class CdkStack extends cdk.Stack {
       desiredCount: 1,
     });
 
+    service.connections.allowFromAnyIpv4(ec2.Port.tcp(80));
+
     // オートスケーリング設定
     const scaling = service.autoScaleTaskCount({
       minCapacity: 0,

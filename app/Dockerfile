@@ -6,4 +6,4 @@ COPY ./dist /app
 
 EXPOSE 3000
 
-CMD ["node", "--enable-source-map", "main.js"]
+CMD ["node", "--enable-source-maps", "main.js"]
