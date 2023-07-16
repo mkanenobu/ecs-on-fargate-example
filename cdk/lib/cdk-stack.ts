@@ -86,7 +86,7 @@ export class CdkStack extends cdk.Stack {
       cluster: ecsCluster,
       taskDefinition: fargateTaskDefinition,
       assignPublicIp: true,
-      desiredCount: 0,
+      desiredCount: 1,
       maxHealthyPercent: 200,
       minHealthyPercent: 50,
     });
